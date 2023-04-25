@@ -1,9 +1,8 @@
 ### YOUR SALESFORCE CREDENTIALS TO GENERATE AN ACCESS TOKEN
-@sf_user=kavishka-dev@wso2.com
-@sf_password=Kavishka123
-@sf_client_id=3MVG9DREgiBqN9WkGQQVUiz1EiaU032PwRE1h3R1tct4M1lv8pxhNce4kif57BE68k4MIIzAzIbEaCYK4S1ys
-@sf_client_secret=6DF4E642612D449C8FD924E626EF7E7076484DBE685F9F020D0A328B21C4DD27
-
+@sf_user=<your salesforce devleoper account user>
+@sf_password=<your salesforce devleoper account password>
+@sf_client_id=<client key of your salesforce Connected App>
+@sf_client_secret=<client secret of your salesforce Connected App>
 ### GENERATES AN ACCESS TOKEN
 # @name createToken
 POST https://login.salesforce.com/services/oauth2/token 
