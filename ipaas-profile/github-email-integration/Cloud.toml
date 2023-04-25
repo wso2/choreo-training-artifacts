@@ -1,0 +1,4 @@
+[settings]
+  buildImage = false
+  thinJar = false
+
