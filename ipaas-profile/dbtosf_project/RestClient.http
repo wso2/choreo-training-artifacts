@@ -1,0 +1,33 @@
+### YOUR SALESFORCE CREDENTIALS TO GENERATE AN ACCESS TOKEN
+@sf_user=kavishka-dev@wso2.com
+@sf_password=Kavishka123
+@sf_client_id=3MVG9DREgiBqN9WkGQQVUiz1EiaU032PwRE1h3R1tct4M1lv8pxhNce4kif57BE68k4MIIzAzIbEaCYK4S1ys
+@sf_client_secret=6DF4E642612D449C8FD924E626EF7E7076484DBE685F9F020D0A328B21C4DD27
+
+### GENERATES AN ACCESS TOKEN
+# @name createToken
+POST https://login.salesforce.com/services/oauth2/token 
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&client_id={{sf_client_id}}&client_secret={{sf_client_secret}}&username={{sf_user}}&password={{sf_password}}
+
+### PRESERVES THE SALESFORCE ACCESS TOKEN IN THE REST CLIENT CONTEXT
+@sf_token={{createToken.response.body.access_token}}
+
+### PRESERVES YOUR SALESFORCE INSTANCE URL IN THE REST CLIENT CONTEXT
+@sf_instance_url={{createToken.response.body.instance_url}}
+
+### CHECKS THE AVAILABLE API VERSIONS. PICK THE LATEST AND SET @sf_api_version=56.0 BELOW ACCORDINGLY
+GET {{sf_instance_url}}/services/data
+Authorization: Bearer {{sf_token}}
+
+### SALESFORCE API VERSION OF YOUR CHOICE
+@sf_api_version=56.0
+
+### LIST ALL EXISTING CONTACTS IN SALESFORCE BY QUERY
+GET {{sf_instance_url}}/services/data/v{{sf_api_version}}/query?q=SELECT Id,FirstName,LastName,Email,Phone FROM Contact
+Content-Type: application/json
+Authorization: Bearer {{sf_token}}
+
+
+### DEMO

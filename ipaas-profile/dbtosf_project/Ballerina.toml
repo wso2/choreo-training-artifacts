@@ -1,0 +1,8 @@
+[package]
+org = "kavi"
+name = "dbtosf_project"
+version = "0.1.0"
+distribution = "2201.3.2"
+
+[build-options]
+observabilityIncluded = true
