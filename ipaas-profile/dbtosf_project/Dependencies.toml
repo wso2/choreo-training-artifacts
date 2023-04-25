@@ -365,7 +365,7 @@ modules = [
 ]
 
 [[package]]
-org = "kavi"
+org = "choreo_training"
 name = "dbtosf_project"
 version = "0.1.0"
 dependencies = [
@@ -376,7 +376,7 @@ dependencies = [
 	{org = "ballerinax", name = "salesforce"}
 ]
 modules = [
-	{org = "kavi", packageName = "dbtosf_project", moduleName = "dbtosf_project"}
+	{org = "choreo_training", packageName = "dbtosf_project", moduleName = "dbtosf_project"}
 ]
 
 
