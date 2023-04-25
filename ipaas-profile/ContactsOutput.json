@@ -1,0 +1,16 @@
+{
+	"numberOfContacts": 22,
+	"contacts": [{
+			"fullName": "Walter White",
+			"phoneNumber": "+447428354632",
+			"email": "walter@demoteam.com",
+			"id": "0038d00000PZM4MAAX"
+		},
+		{
+			"fullName": "Edna Frank",
+			"phoneNumber": "(650) 867-3450",
+			"email": "efrank@genepoint.com",
+			"id": "0038d00000337BfAAI"
+		}
+	]
+}
