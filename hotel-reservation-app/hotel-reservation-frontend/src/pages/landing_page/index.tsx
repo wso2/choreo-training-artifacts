@@ -23,19 +23,22 @@ export default function LandingPage() {
         Enjoy convenience
       </Typography>
       <Button
-        onClick={() => {
-          window.location.href = "/rooms";
-        }}
-        variant="contained"
-        color="secondary"
-        style={{
-          borderRadius: 32,
-          textTransform: "none",
-          height: 64,
-          width: 200,
-          fontSize: 18,
-        }}
-      >
+onClick={() => {
+window.location.href = "/auth/login";
+}}
+variant="contained"
+color="secondary"
+style={{
+borderRadius: 32,
+textTransform: "none",
+height: 64,
+width: 200,
+fontSize: 18,
+}}
+>
+Get Started...
+</Button>
+
         Get Started
       </Button>
     </Box>
