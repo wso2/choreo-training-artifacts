@@ -1,5 +1,4 @@
-# +required Version of the endpoint configuration YAML
-version: 0.1
+schemaVersion: "1.2"
 
 # +required List of endpoints to create
 endpoints:
@@ -12,7 +11,9 @@ endpoints:
     type: REST
     # +optional Network level visibility of this endpoint. Defaults to Project
     # Accepted values: Project|Organization|Public.
-    networkVisibility: Public
+    networkVisibility: 
+      - Project
+      - Public
     # +optional Context (base path) of the API that is exposed via this endpoint.
     # This is mandatory if the endpoint type is set to REST or GraphQL.
     context: /api/reservations
