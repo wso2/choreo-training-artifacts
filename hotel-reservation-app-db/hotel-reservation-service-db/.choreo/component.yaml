@@ -1,0 +1,12 @@
+schemaVersion: "1.2"
+endpoints:
+    - name: hotel-reservation-api
+      displayName: Hotel Reservation API
+      service:
+        basePath: /api/reservations
+        port: 4000
+      type: REST
+      networkVisibilities:
+        - Project
+        - Public
+      schemaFilePath: openapi.yaml
