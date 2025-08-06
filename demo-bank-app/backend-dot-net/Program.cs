@@ -4,6 +4,11 @@ using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure logging to include Entity Framework Core SQL queries
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -29,8 +34,14 @@ if (!string.IsNullOrEmpty(mysqlHost) && !string.IsNullOrEmpty(mysqlUser) &&
 
 // Add Entity Framework
 builder.Services.AddDbContext<BankingContext>(options =>
+{
     options.UseMySql(connectionString,
-        ServerVersion.AutoDetect(connectionString)));
+        ServerVersion.AutoDetect(connectionString));
+    
+    // Enable SQL query logging
+    options.LogTo(Console.WriteLine, LogLevel.Information);
+    options.EnableDetailedErrors();
+});
 
 var app = builder.Build();
 
