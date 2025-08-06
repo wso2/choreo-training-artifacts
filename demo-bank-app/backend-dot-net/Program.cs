@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using BankingMicroservice.Data;
 using Microsoft.AspNetCore.HttpOverrides;
+using System.Reflection;
+
+// Constants
+const string DEMO_BANK_SQL_RESOURCE = "demo-bank-setup-sql";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,16 +66,21 @@ using (var scope = app.Services.CreateScope())
         if (!tablesExist)
         {
             // Execute setup.sql script only if tables don't exist
-            var setupSqlPath = Path.Combine(Directory.GetCurrentDirectory(), "setup.sql");
-            if (File.Exists(setupSqlPath))
+            // Read setup.sql from embedded resource
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = DEMO_BANK_SQL_RESOURCE;
+            
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream != null)
             {
-                var setupSql = File.ReadAllText(setupSqlPath);
+                using var reader = new StreamReader(stream);
+                var setupSql = reader.ReadToEnd();
                 context.Database.ExecuteSqlRaw(setupSql);
-                Console.WriteLine("database setup completed successfully using setup.sql");
+                Console.WriteLine("database setup completed successfully using embedded setup.sql");
             }
             else
             {
-                Console.WriteLine("warning: setup.sql file not found, using ensurecreated only");
+                Console.WriteLine("warning: embedded setup.sql resource not found, using ensurecreated only");
             }
         }
         else

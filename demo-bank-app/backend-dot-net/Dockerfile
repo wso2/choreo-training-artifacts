@@ -20,9 +20,6 @@ RUN adduser --disabled-password --gecos '' --uid 10014 appuser
 # Copy the published application from the build stage
 COPY --from=build /app/out .
 
-# Copy the setup.sql file from the build stage
-COPY --from=build /app/setup.sql .
-
 # Change ownership of the app directory to the non-root user
 RUN chown -R 10014:10014 /app
 
