@@ -1,0 +1,43 @@
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+
+# ASP.NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Environment specific settings
+appsettings.Development.json
+appsettings.Production.json
+.env
+.env.local
+
+# Package manager files
+*.nuget.props
+*.nuget.targets
+project.assets.json
+project.nuget.cache
+
+# Local database files
+*.mdf
+*.ldf
+
+# Logs
+logs/
+*.log

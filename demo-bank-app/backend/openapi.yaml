@@ -1,0 +1,153 @@
+openapi: 3.0.3
+info:
+  title: Banking Microservice API
+  version: 1.0.0
+paths:
+  /users/{userId}/accounts:
+    post:
+      summary: Create bank account
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BankAccount'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccount'
+    get:
+      summary: List bank accounts for user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BankAccount'
+  /users/{userId}/accounts/{id}:
+    delete:
+      summary: Delete bank account
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: No Content
+  /users/{userId}/transactions:
+    post:
+      summary: Make a transaction
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionInput'
+      responses:
+        '201':
+          description: Transaction successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+    get:
+      summary: List transactions for user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+components:
+  schemas:
+    BankAccount:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        owner:
+          type: string
+        account_no:
+          type: string
+        bank_name:
+          type: string
+        balance:
+          type: number
+          format: float
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        from_account_id:
+          type: integer
+        to_account_id:
+          type: integer
+        amount:
+          type: number
+          format: float
+        currency:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    TransactionInput:
+      type: object
+      properties:
+        from_account_id:
+          type: integer
+        account_no:
+          type: string
+        bank_name:
+          type: string
+        amount:
+          type: number
+          format: float
+        currency:
+          type: string
+        user_id:
+          type: integer
