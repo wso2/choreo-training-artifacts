@@ -115,4 +115,9 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 app.UseAuthorization();
 app.MapControllers();
 
+// Configure application port - default to 8080 if not specified
+var appPort = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://*:{appPort}");
+Console.WriteLine($"Application starting on port {appPort}");
+
 app.Run();
