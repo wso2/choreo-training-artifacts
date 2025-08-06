@@ -1,0 +1,123 @@
+using Microsoft.EntityFrameworkCore;
+using BankingMicroservice.Data;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Reflection;
+
+// Constants
+const string DEMO_BANK_SQL_RESOURCE = "demo-bank-setup-sql";
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure logging to include Entity Framework Core SQL queries
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+
+// Add services to the container.
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Build connection string from environment variables if they exist
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Check if Kubernetes environment variables are set
+var mysqlHost = Environment.GetEnvironmentVariable("MYSQL_HOST");
+var mysqlUser = Environment.GetEnvironmentVariable("MYSQL_USER");
+var mysqlPwd = Environment.GetEnvironmentVariable("MYSQL_PWD");
+var mysqlDb = Environment.GetEnvironmentVariable("MYSQL_DB");
+var mysqlPort = Environment.GetEnvironmentVariable("MYSQL_PORT");
+
+if (!string.IsNullOrEmpty(mysqlHost) && !string.IsNullOrEmpty(mysqlUser) && 
+    !string.IsNullOrEmpty(mysqlPwd) && !string.IsNullOrEmpty(mysqlDb))
+{
+    var port = !string.IsNullOrEmpty(mysqlPort) ? mysqlPort : "3306";
+    connectionString = $"Server={mysqlHost};Port={port};Database={mysqlDb};User={mysqlUser};Password={mysqlPwd};SslMode=Required;";
+    Console.WriteLine($"using kubernetes environment variables for database connection to {mysqlHost}:{port}/{mysqlDb}");
+}
+
+// Add Entity Framework
+builder.Services.AddDbContext<BankingContext>(options =>
+{
+    options.UseMySql(connectionString,
+        ServerVersion.AutoDetect(connectionString));
+    
+    // Enable SQL query logging
+    options.LogTo(Console.WriteLine, LogLevel.Information);
+    options.EnableDetailedErrors();
+});
+
+var app = builder.Build();
+
+// Ensure database is created and schema is set up at startup
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<BankingContext>();
+    try
+    {
+        // Ensure database exists
+        context.Database.EnsureCreated();
+        
+        // Check if tables already exist by looking for the bank_accounts table
+        var tablesExist = context.Database.SqlQueryRaw<int>(
+            "SELECT COUNT(*) as Value FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'bank_accounts'")
+            .FirstOrDefault() > 0;
+
+        if (!tablesExist)
+        {
+            // Execute setup.sql script only if tables don't exist
+            // Read setup.sql from embedded resource
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = DEMO_BANK_SQL_RESOURCE;
+            
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream != null)
+            {
+                using var reader = new StreamReader(stream);
+                var setupSql = reader.ReadToEnd();
+                context.Database.ExecuteSqlRaw(setupSql);
+                Console.WriteLine("database setup completed successfully using embedded setup.sql");
+            }
+            else
+            {
+                Console.WriteLine("warning: embedded setup.sql resource not found, using ensurecreated only");
+            }
+        }
+        else
+        {
+            Console.WriteLine("database tables already exist, skipping setup.sql execution");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"database setup failed: {ex.Message}");
+        // Optionally, you could decide whether to continue or exit based on your requirements
+        // For development, we'll continue, but in production you might want to exit
+    }
+}
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+// Configure for deployment behind load balancer
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | 
+                      Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+});
+
+// No HTTPS redirection - handled by load balancer
+// app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+
+// Configure application port - default to 8080 if not specified
+var appPort = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://*:{appPort}");
+Console.WriteLine($"Application starting on port {appPort}");
+
+app.Run();
