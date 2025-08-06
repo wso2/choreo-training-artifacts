@@ -14,11 +14,20 @@ RUN dotnet publish BankingMicroservice.csproj -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
+# Create a non-root user with specific UID
+RUN adduser --disabled-password --gecos '' --uid 10014 appuser
+
 # Copy the published application from the build stage
 COPY --from=build /app/out .
 
 # Copy the setup.sql file from the build stage
 COPY --from=build /app/setup.sql .
+
+# Change ownership of the app directory to the non-root user
+RUN chown -R 10014:10014 /app
+
+# Switch to the non-root user using numeric UID
+USER 10014
 
 # Expose port 8080 (matching your Program.cs configuration)
 EXPOSE 8080

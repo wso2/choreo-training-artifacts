@@ -54,17 +54,29 @@ using (var scope = app.Services.CreateScope())
         // Ensure database exists
         context.Database.EnsureCreated();
         
-        // Execute setup.sql script
-        var setupSqlPath = Path.Combine(Directory.GetCurrentDirectory(), "setup.sql");
-        if (File.Exists(setupSqlPath))
+        // Check if tables already exist by looking for the bank_accounts table
+        var tablesExist = context.Database.SqlQueryRaw<int>(
+            "SELECT COUNT(*) as Value FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'bank_accounts'")
+            .FirstOrDefault() > 0;
+
+        if (!tablesExist)
         {
-            var setupSql = File.ReadAllText(setupSqlPath);
-            context.Database.ExecuteSqlRaw(setupSql);
-            Console.WriteLine("database setup completed successfully using setup.sql");
+            // Execute setup.sql script only if tables don't exist
+            var setupSqlPath = Path.Combine(Directory.GetCurrentDirectory(), "setup.sql");
+            if (File.Exists(setupSqlPath))
+            {
+                var setupSql = File.ReadAllText(setupSqlPath);
+                context.Database.ExecuteSqlRaw(setupSql);
+                Console.WriteLine("database setup completed successfully using setup.sql");
+            }
+            else
+            {
+                Console.WriteLine("warning: setup.sql file not found, using ensurecreated only");
+            }
         }
         else
         {
-            Console.WriteLine("warning: setup.sql file not found, using ensurecreated only");
+            Console.WriteLine("database tables already exist, skipping setup.sql execution");
         }
     }
     catch (Exception ex)
