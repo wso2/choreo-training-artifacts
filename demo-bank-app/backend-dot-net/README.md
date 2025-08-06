@@ -46,8 +46,8 @@ dotnet build
 dotnet run
 ```
 
-The API will be available at: http://localhost:5000
-Swagger UI: http://localhost:5000/swagger
+The API will be available at: http://localhost:8080
+Swagger UI: http://localhost:8080/swagger
 
 ## Database Schema
 
