@@ -3,7 +3,7 @@ schemaVersion: "1.2"
 # +required Incoming connection details for the component
 endpoints:
   # +required Unique name for the endpoint.
-  - name: backing-app-backend
+  - name: banking-app-backend
     # +optional Display name for the endpoint.
     displayName: Banking App Backend
     # +required Service section has the user service endpoint details
@@ -24,8 +24,3 @@ endpoints:
     # This is only applicable to REST or WS endpoint types.
     # The path should be relative to the docker context.
     schemaFilePath: openapi.yaml
-
-dependencies:
-    connectionReferences:
-    - name: bankingdb
-      resourceRef: database:banking/banking
